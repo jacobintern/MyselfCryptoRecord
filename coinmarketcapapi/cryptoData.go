@@ -2,20 +2,20 @@ package coinmarketcapapi
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
-	"net/url"
 	"os"
 	"time"
 
 	_ "github.com/joho/godotenv/autoload"
 )
 
-var apikeys, apikeyName, apikeysAddress string
+var apikeys, apikeyName, quotesApi string
 
 func init() {
 	apikeys = os.Getenv("COINMARKETCAP_APIKEYS")
 	apikeyName = os.Getenv("COINMARKETCAP_APIKEYS_NAME")
-	apikeysAddress = os.Getenv("COINMARKETCAP_APIKEYS_ADDRESS")
+	quotesApi = os.Getenv("COINMARKETCAP_QUOTES_LASTEST")
 }
 
 // Quotes Latest is https://coinmarketcap.com/api/documentation/v1/#operation/getV1CryptocurrencyQuotesLatest
@@ -73,24 +73,59 @@ func GetcryptoDataList() {
 
 	client := &http.Client{}
 
-	req, err := http.NewRequest("Get", apikeysAddress, nil)
+	req, err := http.NewRequest(http.MethodGet, quotesApi, nil)
 
 	if err != nil {
 		fmt.Println("new api request fail")
 	}
 
-	q := url.Values{}
-	q.Add("start", "1")
-	q.Add("limit", "5000")
-	q.Add("convert", "USD")
+	params := req.URL.Query()
+	params.Add("symbol", "BTC")
+	params.Add("convert", "USD")
+	req.URL.RawQuery = params.Encode()
 
 	req.Header.Set("Accepts", "application/json")
-	req.Header.Add(apikeyName, apikeys)
+	req.Header.Set(apikeyName, apikeys)
 
 	resp, err := client.Do(req)
+
 	if err != nil {
 		fmt.Println("coinMarketCap api request fail")
 	}
-	fmt.Println(resp.Body)
+
+	if resp.Body != nil {
+		defer resp.Body.Close()
+	}
+
+	body, readErr := ioutil.ReadAll(resp.Body)
+
+	if readErr != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(string(body))
 
 }
+
+// func GetMapList() {
+
+// 	client := &http.Client{}
+
+// 	req, _ := http.NewRequest(http.MethodGet, mapAddress, nil)
+
+// 	req.Header.Add(apikeyName, apikeys)
+
+// 	res, err := client.Do(req)
+
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
+
+// 	defer res.Body.Close()
+
+// 	body, _ := ioutil.ReadAll(res.Body)
+
+// 	fmt.Println(res.Status)
+// 	fmt.Println(string(body))
+
+// }
