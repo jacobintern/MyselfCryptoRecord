@@ -80,7 +80,7 @@ func GetcryptoDataList() {
 	}
 
 	params := req.URL.Query()
-	params.Add("symbol", "BTC")
+	params.Add("symbol", "BTC,ETH,GNX,FIL,ADA,MANA,LINK,KNC,FTT,SHIB")
 	params.Add("convert", "USD")
 	req.URL.RawQuery = params.Encode()
 
