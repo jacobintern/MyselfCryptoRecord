@@ -2,6 +2,7 @@ package coinmarketcapapi
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -11,7 +12,19 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 )
 
-var apikeys, apikeyName, quotesApi string
+// 改由 db 取得
+var favCryptoList = []string{
+	"BTC",
+	"ETH",
+	"GNX",
+	"FIL",
+	"ADA",
+	"MANA",
+	"LINK",
+	"KNC",
+	"FTT",
+	"SHIB",
+}
 
 // 購買的價格
 var purchasePrice = map[string]float64{
@@ -37,10 +50,11 @@ var myWallet = map[string]float64{
 	"SHIB": 1969425.08,
 }
 
-func init() {
-	apikeys = os.Getenv("COINMARKETCAP_APIKEYS")
-	apikeyName = os.Getenv("COINMARKETCAP_APIKEYS_NAME")
-	quotesApi = os.Getenv("COINMARKETCAP_QUOTES_LASTEST")
+type ApiInfoModel struct {
+	apikeys    string
+	apikeyName string
+	quotesApi  string
+	mapApi     string
 }
 
 // Quotes Latest is https://coinmarketcap.com/api/documentation/v1/#operation/getV1CryptocurrencyQuotesLatest
@@ -102,11 +116,21 @@ type QuotesLatestData struct {
 	} `json:"quote"`
 }
 
+var _apiInfo ApiInfoModel
+
+func init() {
+	_apiInfo = ApiInfoModel{
+		apikeys:    os.Getenv("COINMARKETCAP_APIKEYS"),
+		apikeyName: os.Getenv("COINMARKETCAP_APIKEYS_NAME"),
+		quotesApi:  os.Getenv("COINMARKETCAP_QUOTES_LASTEST"),
+		mapApi:     os.Getenv("COINMARKETCAP_MAP"),
+	}
+}
 func GetcryptoDataList() QuotesLatest {
 
 	client := &http.Client{}
 
-	req, err := http.NewRequest(http.MethodGet, quotesApi, nil)
+	req, err := http.NewRequest(http.MethodGet, _apiInfo.quotesApi, nil)
 
 	if err != nil {
 		fmt.Println("new api request fail")
@@ -120,7 +144,7 @@ func GetcryptoDataList() QuotesLatest {
 
 	// 設定 head 參數
 	req.Header.Set("Accepts", "application/json")
-	req.Header.Set(apikeyName, apikeys)
+	req.Header.Set(_apiInfo.apikeyName, _apiInfo.apikeys)
 
 	// 發送請求
 	resp, err := client.Do(req)
@@ -152,54 +176,60 @@ func GetcryptoDataList() QuotesLatest {
 	}
 
 	return cryptoList
+}
+
+func GetMapList() {
+
+	client := &http.Client{}
+
+	req, _ := http.NewRequest(http.MethodGet, _apiInfo.mapApi, nil)
+
+	req.Header.Add(_apiInfo.apikeyName, _apiInfo.apikeys)
+
+	res, err := client.Do(req)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	defer res.Body.Close()
+
+	body, _ := ioutil.ReadAll(res.Body)
+
+	fmt.Println(res.Status)
+	fmt.Println(string(body))
 
 }
 
-// func GetMapList() {
+func MappingMyList() error {
+	cryptoList := GetcryptoDataList()
 
-// 	client := &http.Client{}
-
-// 	req, _ := http.NewRequest(http.MethodGet, mapAddress, nil)
-
-// 	req.Header.Add(apikeyName, apikeys)
-
-// 	res, err := client.Do(req)
-
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-
-// 	defer res.Body.Close()
-
-// 	body, _ := ioutil.ReadAll(res.Body)
-
-// 	fmt.Println(res.Status)
-// 	fmt.Println(string(body))
-
-// }
-
-func MappingMyList() {
-	//cryptoList := GetcryptoDataList()
+	if cryptoList.Status.ErrorCode != 0 {
+		err := errors.New("CoinMarketCap 資料取得取得失敗")
+		return err
+	}
 
 	// 呼叫自己錢包的資訊
-	for index, data := range purchasePrice {
-		switch index {
+	for _, target := range favCryptoList {
+		switch target {
 		case "FTT":
-			fmt.Println(data)
+
 		case "SHIB":
-			fmt.Println(data)
+
 		case "GNX":
-			fmt.Println(data)
+
 		case "FIL":
-			fmt.Println(data)
+
 		case "ADA":
-			fmt.Println(data)
+
 		case "MANA":
-			fmt.Println(data)
+
 		case "LINK":
-			fmt.Println(data)
+
 		case "KNC":
-			fmt.Println(data)
+
 		}
 	}
+
+	return nil
 }
