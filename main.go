@@ -1,7 +1,10 @@
 package main
 
 import (
-	"github.com/jacobintern/MyselfCryptoRecord/coinmarketcapapi"
+	"log"
+	"net/http"
+
+	"github.com/jacobintern/MyselfCryptoRecord/controllers"
 )
 
 func main() {
@@ -10,5 +13,12 @@ func main() {
 	// 	log.Fatal(err)
 	// }
 	// fmt.Printf("%s\n", data)
-	coinmarketcapapi.MappingMyList()
+	//coinmarketcapapi.MappingMyList()
+
+	http.HandleFunc("api/users", controllers.GetUser)
+	err := http.ListenAndServe(":2000", nil)
+
+	if err != nil {
+		log.Fatalln("ListenAndServe: ", err)
+	}
 }

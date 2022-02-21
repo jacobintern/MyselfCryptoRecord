@@ -1,9 +1,10 @@
-package routers
+package routes
 
 import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/jacobintern/MyselfCryptoRecord/controller"
 )
 
 type Route struct {
@@ -16,13 +17,17 @@ type Route struct {
 var routes []Route
 
 func init() {
-
+	register(http.MethodGet, "api/User/{id}", controller.GetUser, nil)
+	register(http.MethodPost, "api/User/{id}", controller.CreateUser, nil)
+	register(http.MethodPut, "api/User/{id}", controller.UpdateUser, nil)
+	register(http.MethodDelete, "api/User/{id}", controller.DeleteUser, nil)
 }
 
 func NewRouter() *mux.Router {
 	r := mux.NewRouter()
 	for _, route := range routes {
-		r.HandlerFunc(route.Path, route.Handler).Methods(route.Method)
+		r.HandleFunc(route.Path, route.Handler).Methods(route.Method)
+		//r.Methods(route.Method).Path(route.Path).Handler(route.Handler)
 
 		if route.Middleware != nil {
 			r.Use(route.Middleware)
