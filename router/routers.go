@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/jacobintern/MyselfCryptoRecord/controller"
+	"github.com/jacobintern/MyselfCryptoRecord/controllers"
 )
 
 type Route struct {
@@ -17,10 +17,13 @@ type Route struct {
 var routes []Route
 
 func init() {
-	register(http.MethodGet, "api/User/{id}", controller.GetUser, nil)
-	register(http.MethodPost, "api/User/{id}", controller.CreateUser, nil)
-	register(http.MethodPut, "api/User/{id}", controller.UpdateUser, nil)
-	register(http.MethodDelete, "api/User/{id}", controller.DeleteUser, nil)
+	// users
+	register(http.MethodGet, "/api/users/{id}", controllers.GetUser, nil)
+	register(http.MethodPost, "/api/users/{id}", controllers.CreateUser, nil)
+	register(http.MethodPut, "/api/users/{id}", controllers.UpdateUser, nil)
+	register(http.MethodDelete, "/api/users/{id}", controllers.DeleteUser, nil)
+
+	// login
 }
 
 func NewRouter() *mux.Router {

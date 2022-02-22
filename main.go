@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/jacobintern/MyselfCryptoRecord/controllers"
+	routes "github.com/jacobintern/MyselfCryptoRecord/router"
 )
 
 func main() {
@@ -15,8 +15,9 @@ func main() {
 	// fmt.Printf("%s\n", data)
 	//coinmarketcapapi.MappingMyList()
 
-	http.HandleFunc("api/users", controllers.GetUser)
-	err := http.ListenAndServe(":2000", nil)
+	router := routes.NewRouter()
+
+	err := http.ListenAndServe(":2000", router)
 
 	if err != nil {
 		log.Fatalln("ListenAndServe: ", err)
