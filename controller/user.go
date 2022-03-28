@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	userService "github.com/jacobintern/MyselfCryptoRecord/service/user"
@@ -20,9 +21,13 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	userService.UserCreate(&body)
+	res, err := userService.UserCreate(&body)
 
-	w.Write([]byte("Method Post User"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	JosnRes(w, res)
 }
 
 // 更新
@@ -33,4 +38,14 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 // 刪除
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Method Delete User"))
+}
+
+func JosnRes(w http.ResponseWriter, model interface{}) {
+
+	jsonRes, err := json.Marshal(model)
+	if err != nil {
+		log.Fatal(err)
+	}
+	w.Header().Set("Contect-Type", "application/json")
+	w.Write(jsonRes)
 }

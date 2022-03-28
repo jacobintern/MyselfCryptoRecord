@@ -2,7 +2,7 @@ package user
 
 import (
 	"context"
-	"log"
+	"errors"
 
 	"github.com/jacobintern/MyselfCryptoRecord/service"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -17,7 +17,12 @@ type CreateUserModel struct {
 	Email    string `bson:"email" json:"userEmail"`
 }
 
-func UserCreate(model *CreateUserModel) *mongo.InsertOneResult {
+func UserCreate(model *CreateUserModel) (*mongo.InsertOneResult, error) {
+	// model valid
+	if len(model.Account) <= 0 || len(model.Name) <= 0 || len(model.Password) <= 0 {
+		return nil, errors.New("account, name, password is required")
+	}
+
 	mongoDB := service.ConnectionInfo{
 		DBName:         "crypto",
 		CollectionName: "my_acc_list",
@@ -27,8 +32,8 @@ func UserCreate(model *CreateUserModel) *mongo.InsertOneResult {
 	res, insertErr := collection.InsertOne(context.Background(), model)
 
 	if insertErr != nil {
-		log.Fatal(insertErr)
+		return nil, insertErr
 	}
 
-	return res
+	return res, nil
 }
