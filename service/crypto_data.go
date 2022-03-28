@@ -1,4 +1,4 @@
-package coinmarketcapapi
+package service
 
 import (
 	"encoding/json"
@@ -8,8 +8,6 @@ import (
 	"net/http"
 	"os"
 	"time"
-
-	_ "github.com/joho/godotenv/autoload"
 )
 
 // 改由 db 取得
@@ -26,7 +24,7 @@ var favCryptoList = []string{
 	"SHIB",
 }
 
-// 購買的價格
+// 購買的價格，改從資料庫取得
 var purchasePrice = map[string]float64{
 	"GNX":  0.04723,
 	"FIL":  87,
@@ -38,7 +36,7 @@ var purchasePrice = map[string]float64{
 	"SHIB": 0.0000361,
 }
 
-// 擁有的數量
+// 擁有的數量，改從資料庫取得
 var myWallet = map[string]float64{
 	"GNX":  11014,
 	"FIL":  5.7,
@@ -126,6 +124,7 @@ func init() {
 		mapApi:     os.Getenv("COINMARKETCAP_MAP"),
 	}
 }
+
 func GetcryptoDataList() QuotesLatest {
 
 	client := &http.Client{}
@@ -198,7 +197,6 @@ func GetMapList() {
 
 	fmt.Println(res.Status)
 	fmt.Println(string(body))
-
 }
 
 func MappingMyList() error {
