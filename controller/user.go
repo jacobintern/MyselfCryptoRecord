@@ -16,7 +16,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 // 新增
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
-	var body userService.CreateUserModel
+	var body userService.UserEntity
 	err := decoder.Decode(&body)
 	if err != nil {
 		panic(err)
@@ -40,6 +40,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Method Delete User"))
 }
 
+// 回傳用 json data
 func JosnRes(w http.ResponseWriter, model interface{}) {
 
 	jsonRes, err := json.Marshal(model)
