@@ -24,30 +24,6 @@ var favCryptoList = []string{
 	"SHIB",
 }
 
-// 購買的價格，改從資料庫取得
-var purchasePrice = map[string]float64{
-	"GNX":  0.04723,
-	"FIL":  87,
-	"ADA":  2.543,
-	"MANA": 3.32,
-	"LINK": 30.54,
-	"KNC":  1.67,
-	"FTT":  67.458,
-	"SHIB": 0.0000361,
-}
-
-// 擁有的數量，改從資料庫取得
-var myWallet = map[string]float64{
-	"GNX":  11014,
-	"FIL":  5.7,
-	"ADA":  168.08,
-	"MANA": 30.06,
-	"LINK": 5.3,
-	"KNC":  59.67,
-	"FTT":  0.734,
-	"SHIB": 1969425.08,
-}
-
 type ApiInfoModel struct {
 	apikeys    string
 	apikeyName string

@@ -16,7 +16,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 // 新增
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
-	var body userService.UserEntity
+	var body userService.UserCreateModel
 	err := decoder.Decode(&body)
 	if err != nil {
 		panic(err)
